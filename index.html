@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS Aquí Contigo - Dashboard Web</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-light transition-bg" id="app-body">
+
+    <div id="auth-view" class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="card border-0 shadow-lg p-5 login-card" style="width: 100%; max-width: 450px;">
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-shield-heart text-success" style="font-size: 3rem;"></i>
+                <h3 class="fw-bold mt-3">SOS Aquí Contigo</h3>
+            </div>
+
+            <form id="form-login" onsubmit="handleLogin(event)">
+                <p class="text-muted text-center mb-2">Inicia sesión para continuar</p>
+                <div class="alert alert-success py-2 text-center small mb-4 border-0 bg-success bg-opacity-10">
+                    <strong>Usuario de prueba:</strong> admin <br> <strong>Contraseña:</strong> 1234
+                </div>
+                <div class="mb-3">
+                    <input type="text" id="login-user" class="form-control form-control-lg" placeholder="Usuario" required>
+                </div>
+                <div class="mb-3">
+                    <input type="password" id="login-pass" class="form-control form-control-lg" placeholder="Contraseña" required>
+                </div>
+                <div class="d-flex justify-content-end mb-4 small">
+                    <a href="javascript:void(0)" class="text-success text-decoration-none" onclick="toggleAuth('forgot')">¿Olvidaste tu contraseña?</a>
+                </div>
+                <button type="submit" class="btn btn-success btn-lg w-100 fw-bold">Ingresar</button>
+                <div class="text-center mt-3 small">
+                    ¿No tienes cuenta? <a href="javascript:void(0)" class="text-success fw-bold" onclick="toggleAuth('register')">Regístrate aquí</a>
+                </div>
+            </form>
+
+            <form id="form-register" class="d-none" onsubmit="handleRegister(event)">
+                <p class="text-muted text-center mb-4">Crea tu cuenta de seguridad</p>
+                <input type="text" id="reg-name" class="form-control form-control-lg mb-3" placeholder="Nombre Completo" required>
+                <input type="text" id="reg-user" class="form-control form-control-lg mb-3" placeholder="Usuario" required>
+                <input type="password" id="reg-pass" class="form-control form-control-lg mb-4" placeholder="Contraseña" required>
+                <button type="submit" class="btn btn-dark btn-lg w-100 fw-bold">Registrarse</button>
+                <div class="text-center mt-3 small">
+                    <a href="javascript:void(0)" class="text-success fw-bold" onclick="toggleAuth('login')">Volver a iniciar sesión</a>
+                </div>
+            </form>
+
+            <form id="form-forgot" class="d-none" onsubmit="handleForgot(event)">
+                <p class="text-muted text-center mb-4">Recupera tu acceso</p>
+                <input type="text" id="forgot-user" class="form-control form-control-lg mb-4" placeholder="Ingresa tu Usuario" required>
+                <button type="submit" class="btn btn-warning btn-lg w-100 fw-bold text-dark">Recuperar Contraseña</button>
+                <div class="text-center mt-3 small">
+                    <a href="javascript:void(0)" class="text-success fw-bold" onclick="toggleAuth('login')">Volver al inicio</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="main-app-view" class="d-none">
+        <nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top">
+            <div class="container flex-wrap">
+                <a class="navbar-brand fw-bold text-success" href="javascript:void(0)" onclick="showView('dashboard-view')">
+                    <i class="fa-solid fa-shield-heart"></i> SOS
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link nav-custom active" href="javascript:void(0)" id="nav-dashboard" onclick="showView('dashboard-view')">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link nav-custom" href="javascript:void(0)" id="nav-location" onclick="showView('location-view')">Ubicación</a></li>
+                        <li class="nav-item"><a class="nav-link nav-custom" href="javascript:void(0)" id="nav-contacts" onclick="showView('contacts-view')">Contactos</a></li>
+                        <li class="nav-item"><a class="nav-link nav-custom" href="javascript:void(0)" id="nav-stats" onclick="showView('stats-view')">Historial</a></li>
+                        <li class="nav-item"><a class="nav-link nav-custom" href="javascript:void(0)" id="nav-profile" onclick="showView('profile-view')">Mi Perfil</a></li>
+                        <li class="nav-item"><a class="nav-link nav-custom" href="javascript:void(0)" id="nav-settings" onclick="showView('settings-view')"><i class="fa-solid fa-gear me-1"></i>Ajustes</a></li>
+                    </ul>
+                    <div class="d-flex align-items-center mt-3 mt-lg-0">
+                        <span class="me-3 text-muted d-none d-sm-inline">Hola, <strong id="display-user-name">Usuario</strong></span>
+                        <img id="display-user-avatar" src="" class="rounded-circle shadow-sm" width="40" alt="Profile" style="cursor:pointer;" onclick="showView('profile-view')">
+                        <button class="btn btn-sm btn-outline-danger ms-3" onclick="handleLogout()">Salir</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mt-4 mb-5">
+            <div id="dashboard-view" class="app-section">
+                <div class="row g-4 justify-content-center">
+                    <div class="col-lg-8">
+                        
+                        <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 text-center bg-white">
+                            <h2 class="fw-bold mb-1 text-success responsive-title">Centro de Control</h2>
+                            <p class="text-muted m-0">Selecciona el estado actual para activar los protocolos.</p>
+                        </div>
+
+                        <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 text-center bg-white bg-opacity-75 backdrop-blur">
+                            <div class="d-flex justify-content-center align-items-center my-2 gap-3 gap-md-5">
+                                <button class="btn btn-link text-secondary fs-1 p-0" onclick="prevCarousel()"><i class="fa-solid fa-chevron-left"></i></button>
+                                <div class="text-center d-flex flex-column align-items-center">
+                                    <p class="text-muted small fw-bold mb-3 text-uppercase">Desliza para elegir estado</p>
+                                    <button id="carousel-btn" class="btn-main-sos pulse preview-safe" onclick="activateSelectedState()">
+                                        <i id="carousel-icon" class="fa-solid fa-shield-halved"></i>
+                                    </button>
+                                    <h4 id="carousel-text" class="mt-4 fw-bold text-success">Seguro</h4>
+                                </div>
+                                <button class="btn btn-link text-secondary fs-1 p-0" onclick="nextCarousel()"><i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <div class="info-card-web shadow-sm" onclick="showView('health-view')">
+                                    <div class="icon-box bg-danger bg-opacity-10 text-danger"><i class="fa-solid fa-heart-pulse"></i></div>
+                                    <div class="text-start flex-grow-1 min-w-0">
+                                        <h6 class="fw-bold mb-0 text-truncate">Signos Vitales</h6>
+                                        <small class="text-muted text-truncate d-block">Monitoreo de salud</small>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-muted"></i>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="info-card-web shadow-sm" onclick="showView('location-view')">
+                                    <div class="icon-box bg-success bg-opacity-10 text-success"><i class="fa-solid fa-location-dot"></i></div>
+                                    <div class="text-start flex-grow-1 min-w-0">
+                                        <h6 class="fw-bold mb-0 text-truncate">Ubicación GPS</h6>
+                                        <small class="text-muted text-truncate d-block">Rastreo en tiempo real</small>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-muted"></i>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="info-card-web shadow-sm" onclick="toggleWatchSync()">
+                                    <div class="icon-box bg-dark text-white"><i class="fa-solid fa-stopwatch"></i></div>
+                                    <div class="text-start flex-grow-1 min-w-0">
+                                        <h6 class="fw-bold mb-0 text-truncate">Smartwatch</h6>
+                                        <small id="watch-status-text" class="text-muted text-truncate d-block">Sincronizado</small>
+                                    </div>
+                                    <i id="watch-status-icon" class="fa-solid fa-link text-success"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="active-state-view" class="app-section d-none">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-lg p-5 rounded-4 text-center bg-white">
+                            <i id="active-state-icon" class="fa-solid fa-shield-halved text-success mb-3" style="font-size: 5rem;"></i>
+                            <h2 id="active-state-title" class="fw-bold mb-2 text-success">TODO ESTÁ BIEN</h2>
+                            <p id="active-state-subtitle" class="text-muted mb-4">Tu cuenta se encuentra bajo protección constante.</p>
+                            
+                            <div id="active-state-dynamic-content">
+                                </div>
+
+                            <div class="d-grid gap-3 mt-4" id="active-state-buttons-zone">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="location-view" class="app-section d-none">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                <h4 class="fw-bold m-0 text-dark"><i class="fa-solid fa-map-location-dot text-success me-2"></i>Ubicación en Tiempo Real</h4>
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 small"><i class="fa-solid fa-circle-dot fa-fade me-1"></i> GPS Conectado</span>
+                            </div>
+                            <p class="text-muted small mb-4">Esta sección transmite las coordenadas exactas de forma segura a tus contactos seleccionados en caso de incidentes.</p>
+                            
+                            <div class="bg-light rounded-4 p-5 text-center d-flex flex-column align-items-center justify-content-center border" style="min-height: 300px; position: relative; overflow: hidden;">
+                                <div class="radar-container mb-4" style="width: 120px; height: 120px;">
+                                    <div class="radar-circle pulse-ring-1" style="width: 120px; height: 120px;"></div>
+                                    <div class="radar-circle pulse-ring-2" style="width: 120px; height: 120px;"></div>
+                                    <div class="radar-center" style="width: 45px; height: 45px;"><i class="fa-solid fa-location-dot text-white fs-4"></i></div>
+                                </div>
+                                <h5 class="fw-bold m-0 text-dark">Universidad Libre De Colombia</h5>
+                                <p class="text-muted small m-0 mt-1"><i class="fa-solid fa-compass me-1"></i> Coordenadas: 4.6097° N, 74.0817° W • Bogotá, Colombia</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="guide-view" class="app-section d-none">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-lg p-5 rounded-4 text-center bg-purple-light guide-card">
+                            <div class="mb-4">
+                                <i class="fa-solid fa-lungs text-purple pulse" style="font-size: 4rem;"></i>
+                            </div>
+                            <h2 class="fw-bold mb-3 text-purple">Guía de Emergencia</h2>
+                            <p class="text-purple text-opacity-75 mb-4">Sigue estos pasos para mantener la calma mientras llega la ayuda.</p>
+                            
+                            <div class="text-start d-grid gap-3 mb-5">
+                                <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-3">
+                                    <div class="bg-purple text-white rounded-circle d-flex justify-content-center align-items-center" style="width: 35px; height: 35px; font-weight: bold;">1</div>
+                                    <h6 class="m-0 fw-bold text-dark">Respira lentamente</h6>
+                                </div>
+                                <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-3">
+                                    <div class="bg-purple text-white rounded-circle d-flex justify-content-center align-items-center" style="width: 35px; height: 35px; font-weight: bold;">2</div>
+                                    <h6 class="m-0 fw-bold text-dark">Permanece sentado o recostado</h6>
+                                </div>
+                                <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-3">
+                                    <div class="bg-purple text-white rounded-circle d-flex justify-content-center align-items-center" style="width: 35px; height: 35px; font-weight: bold;">3</div>
+                                    <h6 class="m-0 fw-bold text-dark">Espera ayuda, tu red ya fue notificada</h6>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-dark w-100 fw-bold rounded-pill py-2" onclick="showActiveStateScreen()">
+                                Volver al Panel de Estado
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="health-view" class="app-section d-none">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <h3 class="fw-bold mb-4"><i class="fa-solid fa-heart-pulse text-danger me-2"></i> Monitoreo de Salud</h3>
+                        
+                        <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white text-center" style="border-top: 5px solid #e74c3c !important;">
+                            <h5 class="fw-bold text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Frecuencia Cardíaca</h5>
+                            <div class="display-1 fw-bold text-dark mt-3 mb-1">72 <span class="fs-4 text-muted">lpm</span></div>
+                            <p class="text-muted small">Ritmo cardíaco estable y en rangos normales.</p>
+                            <div class="mt-2 mb-3">
+                                <div class="pulse d-inline-block p-4 rounded-circle bg-success bg-opacity-10 text-success fs-1">
+                                    <i class="fa-solid fa-heart"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-6 col-md-3">
+                                <div class="card border-0 shadow-sm p-3 rounded-4 bg-white text-center h-100">
+                                    <i class="fa-solid fa-bed text-primary fs-3 mb-2"></i>
+                                    <h6 class="fw-bold m-0">Sueño</h6>
+                                    <small class="text-muted">6h 30m</small>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="card border-0 shadow-sm p-3 rounded-4 bg-white text-center h-100">
+                                    <i class="fa-solid fa-lungs text-info fs-3 mb-2"></i>
+                                    <h6 class="fw-bold m-0">Oxígeno</h6>
+                                    <small class="text-muted">98%</small>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="card border-0 shadow-sm p-3 rounded-4 bg-white text-center h-100">
+                                    <i class="fa-solid fa-brain text-warning fs-3 mb-2"></i>
+                                    <h6 class="fw-bold m-0">Estrés</h6>
+                                    <small class="text-muted text-success fw-bold">Normal</small>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="card border-0 shadow-sm p-3 rounded-4 bg-white text-center h-100">
+                                    <i class="fa-solid fa-shoe-prints text-success fs-3 mb-2"></i>
+                                    <h6 class="fw-bold m-0">Pasos</h6>
+                                    <small class="text-muted">5,240</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="profile-view" class="app-section d-none">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div id="profile-alert-first" class="alert alert-warning border-0 shadow-sm mb-4 rounded-4 d-none">
+                            <h6 class="fw-bold m-0"><i class="fa-solid fa-circle-exclamation me-2"></i>¡Por favor completa tus datos!</h6>
+                            <p class="m-0 small mt-1">Para brindar una mejor asistencia en caso de emergencia, necesitamos tu información básica.</p>
+                        </div>
+                        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                                <h4 class="fw-bold m-0 text-dark"><i class="fa-solid fa-user text-success me-2"></i>Datos de Salud</h4>
+                                <button id="btn-edit-profile" class="btn btn-outline-success btn-sm rounded-pill px-3 fw-bold" onclick="enableProfileEdit(true)">
+                                    <i class="fa-solid fa-pen me-1"></i> Editar
+                                </button>
+                            </div>
+                            <form id="form-profile-data" onsubmit="handleSaveProfile(event)">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">Nombre Completo</label>
+                                        <input type="text" id="prof-name" class="form-control" disabled required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">Teléfono Personal</label>
+                                        <input type="tel" id="prof-phone" class="form-control" disabled required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold text-muted">Tipo de Sangre</label>
+                                        <select id="prof-blood" class="form-select" disabled required>
+                                            <option value="">Seleccione...</option>
+                                            <option value="O+">O+</option><option value="O-">O-</option>
+                                            <option value="A+">A+</option><option value="A-">A-</option>
+                                            <option value="B+">B+</option><option value="AB+">AB+</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="form-label small fw-bold text-muted">Alergias o Condiciones</label>
+                                        <input type="text" id="prof-conditions" class="form-control" placeholder="Ej. Alergia a la penicilina, asma..." disabled>
+                                    </div>
+                                    <div class="col-12 mt-4 d-none" id="profile-actions-zone">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button type="button" class="btn btn-light rounded-pill px-4" onclick="cancelProfileEdit()">Cancelar</button>
+                                            <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold">Guardar Cambios</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="contacts-view" class="app-section d-none">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                            <h3 class="fw-bold m-0"><i class="fa-solid fa-users text-success me-2"></i> Red de Apoyo</h3>
+                            <button class="btn btn-success rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#addContactModal">
+                                <i class="fa-solid fa-plus me-1"></i> Nuevo
+                            </button>
+                        </div>
+                        <div class="card border-0 shadow-sm rounded-4">
+                            <div class="card-body p-4">
+                                <div id="contacts-list" class="row g-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="stats-view" class="app-section d-none">
+                <div class="row justify-content-center g-4">
+                    <div class="col-lg-8">
+                        <h3 class="fw-bold mb-4"><i class="fa-solid fa-chart-pie text-success me-2"></i> Informe de Eventos</h3>
+                        
+                        <div class="row g-3 mb-4 text-center">
+                            <div class="col-6 col-md-4"><div class="card border-0 shadow-sm p-3 rounded-4 bg-white"><h6 class="text-muted mb-1 small fw-bold">ROJAS</h6><h2 id="stat-danger-count" class="fw-bold text-danger m-0">0</h2></div></div>
+                            <div class="col-6 col-md-4"><div class="card border-0 shadow-sm p-3 rounded-4 bg-white"><h6 class="text-muted mb-1 small fw-bold">AMARILLAS</h6><h2 id="stat-warning-count" class="fw-bold text-warning m-0">0</h2></div></div>
+                            <div class="col-12 col-md-4"><div class="card border-0 shadow-sm p-3 rounded-4 bg-white"><h6 class="text-muted mb-1 small fw-bold">FALSAS/CANCEL.</h6><h2 id="stat-cancel-count" class="fw-bold text-secondary m-0">0</h2></div></div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm p-4 mb-4 rounded-4 bg-white">
+                            <h6 class="fw-bold mb-3 text-dark">Distribución de Incidentes</h6>
+                            <div class="progress rounded-pill mb-3" style="height: 10px;">
+                                <div id="progress-danger" class="progress-bar bg-danger" style="width: 0%"></div>
+                                <div id="progress-warning" class="progress-bar bg-warning" style="width: 0%"></div>
+                                <div id="progress-cancel" class="progress-bar bg-secondary" style="width: 0%"></div>
+                            </div>
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span><i class="fa-solid fa-square text-danger me-1"></i> <span id="pct-danger">0</span>% Rojas</span>
+                                <span><i class="fa-solid fa-square text-warning me-1"></i> <span id="pct-warning">0</span>% Amarillas</span>
+                                <span><i class="fa-solid fa-square text-secondary me-1"></i> <span id="pct-cancel">0</span>% Resueltas</span>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                            <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <h5 class="fw-bold m-0">Historial Detallado</h5>
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="clearLogs()">Vaciar Historial</button>
+                            </div>
+                            <div class="card-body px-0 pb-0">
+                                <div class="table-responsive px-4 pb-4">
+                                    <table class="table table-hover align-middle custom-table mb-0">
+                                        <thead class="table-light"><tr><th>Fecha/Hora</th><th>Evento</th><th>Detalles</th></tr></thead>
+                                        <tbody id="logs-table-body"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="settings-view" class="app-section d-none">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <h3 class="fw-bold mb-4"><i class="fa-solid fa-gear text-success me-2"></i> Configuración</h3>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="info-card-web shadow-sm" onclick="showView('health-view')">
+                                    <div class="icon-box bg-danger bg-opacity-10 text-danger"><i class="fa-solid fa-heart-pulse"></i></div>
+                                    <div class="text-start flex-grow-1 min-w-0">
+                                        <h6 class="fw-bold mb-0">Monitoreo de Salud</h6>
+                                        <small class="text-muted d-block">Ver signos vitales</small>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-muted"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-card-web shadow-sm" onclick="showView('location-view')">
+                                    <div class="icon-box bg-success bg-opacity-10 text-success"><i class="fa-solid fa-location-dot"></i></div>
+                                    <div class="text-start flex-grow-1 min-w-0">
+                                        <h6 class="fw-bold mb-0">Ubicación</h6>
+                                        <small class="text-muted d-block">Panel y GPS Vinculado</small>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-muted"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-card-web shadow-sm" onclick="showView('stats-view')">
+                                    <div class="icon-box bg-warning bg-opacity-10 text-warning"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                                    <div class="text-start flex-grow-1 min-w-0">
+                                        <h6 class="fw-bold mb-0">Historial de Alertas</h6>
+                                        <small class="text-muted d-block">Registro de eventos</small>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-muted"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-card-web shadow-sm" onclick="showView('stats-view')">
+                                    <div class="icon-box bg-primary bg-opacity-10 text-primary"><i class="fa-solid fa-chart-pie"></i></div>
+                                    <div class="text-start flex-grow-1 min-w-0">
+                                        <h6 class="fw-bold mb-0">Resumen y Estadísticas</h6>
+                                        <small class="text-muted d-block">Métricas de uso</small>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-muted"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 my-2"><hr class="text-muted"></div>
+
+                            <div class="col-md-6">
+                                <div class="info-card-web shadow-sm" onclick="showView('profile-view')">
+                                    <div class="icon-box bg-secondary bg-opacity-10 text-secondary"><i class="fa-solid fa-user-shield"></i></div>
+                                    <div class="text-start flex-grow-1 min-w-0">
+                                        <h6 class="fw-bold mb-0">Mi Perfil Médico</h6>
+                                        <small class="text-muted d-block">Editar ficha de datos</small>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-muted"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-card-web shadow-sm" onclick="showView('contacts-view')">
+                                    <div class="icon-box bg-secondary bg-opacity-10 text-secondary"><i class="fa-solid fa-users-gear"></i></div>
+                                    <div class="text-start flex-grow-1 min-w-0">
+                                        <h6 class="fw-bold mb-0">Contactos de Apoyo</h6>
+                                        <small class="text-muted d-block">Gestionar red</small>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="cancelEmergencyModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-danger"><i class="fa-solid fa-triangle-exclamation"></i> Cancelar Alerta Crítica</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted">Por favor, confirma el motivo de la cancelación de la alerta para el informe.</p>
+                    <select id="cancel-reason" class="form-select mb-4">
+                        <option value="Falsa alarma / Presión accidental">Falsa alarma / Presión accidental</option>
+                        <option value="Situación controlada por el usuario">Situación controlada por el usuario</option>
+                        <option value="Prueba de sistema">Prueba de sistema</option>
+                    </select>
+                    <button class="btn btn-dark w-100 fw-bold py-2 rounded-3" onclick="executeEmergencyCancellation()">Desactivar Alerta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addContactModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0"><h5 class="modal-title fw-bold">Agregar Contacto</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body p-4">
+                    <input type="text" id="contact-name" class="form-control mb-3 rounded-3" placeholder="Nombre (Ej. Mamá)">
+                    <input type="tel" id="contact-phone" class="form-control mb-4 rounded-3" placeholder="Teléfono (Ej. 311 000 0000)">
+                    <button class="btn btn-success w-100 fw-bold py-2 rounded-3 shadow-sm" onclick="addContact()">Guardar Contacto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
